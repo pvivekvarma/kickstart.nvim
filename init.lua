@@ -207,10 +207,20 @@ vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper win
 -- vim.keymap.set("n", "<C-S-j>", "<C-w>J", { desc = "Move window to the lower" })
 -- vim.keymap.set("n", "<C-S-k>", "<C-w>K", { desc = "Move window to the upper" })
 
+-- Lazygit integration
+-- Add this to your init.lua in the keymaps section
+
+-- vim.keymap.set('n', '<leader>gg', ':!lazygit<CR>', { desc = 'Open Lazygit', silent = true })
+
+-- Or for a better terminal integration:
+-- vim.keymap.set('n', '<leader>gg', function()
+--  vim.cmd 'terminal lazygit'
+-- end, { desc = 'Open Lazygit in terminal', silent = true })
+
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
 
--- Highlight when yanking (copying) text
+----  Highlight when yanking (copying) text
 --  Try it with `yap` in normal mode
 --  See `:help vim.hl.on_yank()`
 vim.api.nvim_create_autocmd('TextYankPost', {
@@ -428,6 +438,10 @@ require('lazy').setup({
 
       -- See `:help telescope.builtin`
       local builtin = require 'telescope.builtin'
+      vim.keymap.set('n', '<leader>ff', builtin.find_files, { desc = 'Telescope find files' })
+      vim.keymap.set('n', '<leader>fg', builtin.live_grep, { desc = 'Telescope live grep' })
+      vim.keymap.set('n', '<leader>fb', builtin.buffers, { desc = 'Telescope buffers' })
+      vim.keymap.set('n', '<leader>fh', builtin.help_tags, { desc = 'Telescope help tags' })
       vim.keymap.set('n', '<leader>sh', builtin.help_tags, { desc = '[S]earch [H]elp' })
       vim.keymap.set('n', '<leader>sk', builtin.keymaps, { desc = '[S]earch [K]eymaps' })
       vim.keymap.set('n', '<leader>sf', builtin.find_files, { desc = '[S]earch [F]iles' })
@@ -476,6 +490,47 @@ require('lazy').setup({
         { path = '${3rd}/luv/library', words = { 'vim%.uv' } },
       },
     },
+  },
+  {
+    'preservim/nerdtree',
+    config = function()
+      -- NERDTree Keybindings
+      vim.keymap.set('n', '<leader>n', ':NERDTreeFocus<CR>', { desc = 'NERDTree Focus', silent = true })
+      vim.keymap.set('n', '<C-n>', ':NERDTree<CR>', { desc = 'Open NERDTree', silent = true })
+      vim.keymap.set('n', '<C-t>', ':NERDTreeToggle<CR>', { desc = 'Toggle NERDTree', silent = true })
+      vim.keymap.set('n', '<C-f>', ':NERDTreeFind<CR>', { desc = 'NERDTree Find current file', silent = true })
+
+      -- Optional: NERDTree settings
+      vim.g.NERDTreeShowHidden = 1
+      vim.g.NERDTreeMinimalUI = 1
+      vim.g.NERDTreeIgnore = {}
+      vim.g.NERDTreeWinSize = 30
+    end,
+  },
+  {
+    'kdheepak/lazygit.nvim',
+    lazy = false,
+    cmd = {
+      'LazyGit',
+      'LazyGitConfig',
+      'LazyGitCurrentFile',
+      'LazyGitFilter',
+      'LazyGitFilterCurrentFile',
+    },
+    -- optional for floating window border decoration
+    dependencies = {
+      -- 'nvim-telescope/telescope.nvim',
+      'nvim-lua/plenary.nvim',
+    },
+    -- setting the keybinding for LazyGit with 'keys' is recommended in
+    -- order to load the plugin when the command is run for the first time
+    keys = {
+      { '<leader>lg', '<cmd>LazyGit<cr>', desc = 'LazyGit' },
+    },
+    config = function()
+      -- require('telescope').load_extension 'lazygit'
+      vim.keymap.set('n', '<leader>gg', ':LazyGit<CR>', { desc = 'LazyGit Open', silent = true })
+    end,
   },
   {
     -- Main LSP Configuration
