@@ -13,7 +13,7 @@
 ========         ||:Tutor              ||   |:::::|          ========
 ========         |'-..................-'|   |____o|          ========
 ========         `"")----------------(""`   ___________      ========
-========        /::::::::::|  |::::::::::\  \ no mouse \     ========
+========        /::::::::::|  |::::::::::d  \ no mouse \     ========
 ========       /:::========|  |==hjkl==:::\  \ required \    ========
 ========      '""""""""""""'  '""""""""""""'  '""""""""""'   ========
 ========                                                     ========
@@ -216,6 +216,60 @@ vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper win
 -- vim.keymap.set('n', '<leader>gg', function()
 --  vim.cmd 'terminal lazygit'
 -- end, { desc = 'Open Lazygit in terminal', silent = true })
+--
+
+local keymap = vim.keymap.set
+local opts = { noremap = true, silent = true }
+
+-- Open specific numbered terminals
+keymap('n', '<leader>t1', '<cmd>1ToggleTerm<cr>', opts)
+keymap('n', '<leader>t2', '<cmd>2ToggleTerm<cr>', opts)
+keymap('n', '<leader>t3', '<cmd>3ToggleTerm<cr>', opts)
+
+-- Toggle terminal
+keymap('n', '<leader>tf', '<cmd>ToggleTerm direction=float<cr>', opts)
+keymap('n', '<leader>th', '<cmd>ToggleTerm direction=horizontal<cr>', opts)
+keymap('n', '<leader>tv', '<cmd>ToggleTerm direction=vertical size=80<cr>', opts)
+keymap('n', '<leader>tt', '<cmd>ToggleTerm direction=tab<cr>', opts)
+
+keymap('n', '<leader>ts', '<cmd>TermSelect<cr>', opts)
+
+-- Terminal mode mappings
+function _G.set_terminal_keymaps()
+  local opts = { buffer = 0 }
+  vim.keymap.set('t', '<esc>', [[<C-\><C-n>]], opts)
+  vim.keymap.set('t', 'jk', [[<C-\><C-n>]], opts)
+  vim.keymap.set('t', '<C-h>', [[<Cmd>wincmd h<CR>]], opts)
+  vim.keymap.set('t', '<C-j>', [[<Cmd>wincmd j<CR>]], opts)
+  vim.keymap.set('t', '<C-k>', [[<Cmd>wincmd k<CR>]], opts)
+  vim.keymap.set('t', '<C-l>', [[<Cmd>wincmd l<CR>]], opts)
+end
+
+vim.cmd 'autocmd! TermOpen term://* lua set_terminal_keymaps()'
+
+-- Can create specific terminals for different tasks:
+-- local Terminal = require('toggleterm.terminal').Terminal
+--
+-- -- Lazygit
+-- local lazygit = Terminal:new({
+--   cmd = "lazygit",
+--   hidden = true,
+--   direction = "float",
+-- })
+--
+-- function _lazygit_toggle()
+--   lazygit:toggle()
+-- end
+--
+-- vim.keymap.set("n", "<leader>lg", "<cmd>lua _lazygit_toggle()<CR>", opts)
+--
+-- -- Python REPL
+-- local python = Terminal:new({ cmd = "python", hidden = true })
+-- function _python_toggle()
+--   python:toggle()
+-- end
+--
+-- vim.keymap.set("n", "<leader>tp", "<cmd>lua _python_toggle()<CR>", opts)
 
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
@@ -362,6 +416,14 @@ require('lazy').setup({
       },
     },
   },
+  {
+    'catppuccin/nvim',
+    name = 'catppuccin',
+    priority = 1000,
+    config = function()
+      vim.cmd.colorscheme 'catppuccin-mocha' -- Or another flavor like 'catppuccin-latte'
+    end,
+  },
 
   -- NOTE: Plugins can specify dependencies.
   --
@@ -505,6 +567,46 @@ require('lazy').setup({
       vim.g.NERDTreeMinimalUI = 1
       vim.g.NERDTreeIgnore = {}
       vim.g.NERDTreeWinSize = 30
+    end,
+  },
+  {
+    'akinsho/toggleterm.nvim',
+    version = '*',
+    config = function()
+      require('toggleterm').setup {
+        -- your configuration here
+        size = 20,
+        open_mapping = [[<c-\>]],
+        hide_numbers = true,
+        shade_terminals = true,
+        shading_factor = 2,
+        start_in_insert = true,
+        insert_mappings = true,
+        terminal_mappings = true,
+        persist_size = true,
+        persist_mode = true,
+        direction = 'float',
+        close_on_exit = true,
+        shell = vim.o.shell,
+        float_opts = {
+          border = 'curved',
+          winblend = 0,
+        },
+      }
+    end,
+  },
+  -- {
+  --   'sheerun/vim-polyglot'
+  -- },
+  {
+    'sainnhe/sonokai',
+    lazy = false,
+    priority = 1000,
+    config = function()
+      -- Optionally configure and load the colorscheme
+      -- directly inside the plugin declaration.
+      vim.g.sonokai_enable_italic = true
+      vim.cmd.colorscheme 'sonokai'
     end,
   },
   {
@@ -962,7 +1064,7 @@ require('lazy').setup({
       -- Load the colorscheme here.
       -- Like many other themes, this one has different styles, and you could load
       -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
-      vim.cmd.colorscheme 'tokyonight-night'
+      -- vim.cmd.colorscheme 'tokyonight-night'
     end,
   },
 
